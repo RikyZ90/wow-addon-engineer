@@ -2,7 +2,7 @@
 
 **Invoke, do not vendor.** The MIT [LICENSE](../LICENSE) applies to original scripts, skills, documentation, tests and configuration. It does not relicense external tools/data, dependencies, Blizzard assets, or trademarks.
 
-No external executable, GPL source, API database, external language-server schema, simulator, Lua framework, or runtime agent addon is distributed. Integration uses original instructions, path detection, and invocation of independently installed software. The packaged MCP configuration lets the host start an original Node launcher, which resolves and starts an existing server. The launcher and configuration use this project's MIT license; no server implementation, runtime, dependency, API dataset, or wiki cache is included. Declaring the connection does not grant rights to redistribute upstream material.
+No external executable, GPL source, API database, external language-server schema, simulator, Lua framework, or runtime agent addon is distributed. Integration uses original instructions, path detection, and invocation of external software. Codex starts an original MIT-licensed Node launcher that resolves an existing server. Claude Code uses the packaged `package.json` and `package-lock.json` to download one exact server release from npm into its own plugin cache; neither ZIP nor Git contains that package, its dependencies, or its data. This host-managed installation is the sole exception to user-installed integrations. Declaring the connection does not grant rights to redistribute upstream material.
 
 Before copying or releasing material:
 

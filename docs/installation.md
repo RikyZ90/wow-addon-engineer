@@ -6,6 +6,7 @@ Format and installation guidance checked against official documentation on **202
 - [OpenAI: Desktop-only plugins](https://developers.openai.com/plugins/deploy/desktop-only)
 - [OpenAI: Submission requirements](https://developers.openai.com/plugins/deploy/submission)
 - [Claude Code: Plugin reference](https://code.claude.com/docs/en/plugins-reference)
+- [Claude Code: Plugin loading and npm dependencies](https://code.claude.com/docs/en/plugins/loading#nodejs-package-dependencies)
 - [Claude Code: Marketplace reference](https://code.claude.com/docs/en/plugins/marketplace-reference)
 - [Claude Code: Skills](https://code.claude.com/docs/en/skills)
 
@@ -19,6 +20,7 @@ mcp.json                            Portable stdio MCP connection (Codex package
 .agents/plugins/marketplace.json    Codex repository marketplace
 .claude-plugin/plugin.json          Claude Code manifest and inline MCP connection
 .claude-plugin/marketplace.json     Claude Code marketplace
+package.json / package-lock.json    Claude-only pinned npm dependency metadata
 skills/<name>/SKILL.md              The same seven skills for both hosts
 scripts/                           Original Python, PowerShell, and Node helpers
 docs/                              Shared engineering and integration references
@@ -31,15 +33,15 @@ Claude discovers `skills/` at the plugin root automatically. Its manifest stays 
 
 Each marketplace points at `./`, relative to the repository/extracted package root. No symlinks or copied skill trees are necessary. Supporting links inside skills resolve relative to their own `SKILL.md`, as the instructions explicitly state. This is a shared Markdown convention; packaging tests verify targets remain inside both archives.
 
-The Codex ZIP includes its portable manifest, overlay, marketplace, and both MCP configuration files. The Claude ZIP includes its own manifests/marketplace and excludes root `plugin.json`, `mcp.json`, `.mcp.json`, and Codex metadata. Shared skills and helpers are byte-identical between ZIPs.
+The Codex ZIP includes its portable manifest, overlay, marketplace, and both MCP configuration files. The Claude ZIP includes its own manifests/marketplace, `package.json`, and `package-lock.json`; it excludes root `plugin.json`, `mcp.json`, `.mcp.json`, and Codex metadata. Neither ZIP contains `node_modules/` or upstream code/data. Shared skills and helpers are byte-identical between ZIPs.
 
 ## Packaged MCP connection
 
-Version 0.2.0 declares a `wow_api` stdio connection that runs the original `scripts/mcp_launcher.mjs` with an existing native **Node.js >=20.11** on the host's `PATH`. The launcher resolves an already-installed external `@nighthawk42/wow-api-mcp` entrypoint. See [integration setup](integrations.md#wow-api-mcp-packaged-connection) for detection, overrides, and separate upstream/data terms.
+Version 0.2.2 declares a `wow_api` stdio connection for both hosts, with native **Node.js >=20.11** on the executing host's `PATH`. Claude Code installs exact `@nighthawk42/wow-api-mcp@0.2.2` from npm into its cached marketplace plugin using the packaged lockfile, then runs its `dist/index.js` directly. This requires a Claude Code version supporting [plugin npm dependencies](https://code.claude.com/docs/en/plugins/loading#nodejs-package-dependencies). Claude's dependency installation uses `--ignore-scripts`; it is performed by the host, not by this project's scripts. A checkout previewed with `--plugin-dir` or installed from a **local-path marketplace** is loaded in place and needs a manual `npm ci --ignore-scripts` there to test MCP startup.
 
-Installing or enabling the plugin permits the host to start that connection. If Node or the external server is missing, the MCP connection is unavailable; the seven skills and other helpers remain usable. The Python doctor reports local detection only and does not start the MCP server. If the host already has the same MCP configured independently, disable one connection manually to avoid duplicates. No helper changes host configuration automatically.
+Codex continues to run the original `scripts/mcp_launcher.mjs`, which resolves a separately installed external package or an existing `WAE_WOW_API_MCP` entrypoint. See [integration setup](integrations.md#wow-api-mcp-packaged-connection). The Python doctor reports only PATH-based local detection; it cannot inspect Claude's cached dependency. Inspect the host's actual MCP status and tool list. If Node or the server is unavailable, the seven skills and other helpers remain usable. Disable duplicate independent MCP connections manually.
 
-For a desktop app, its process must inherit `PATH` and any `WAE_WOW_API_MCP` override. Set them before starting the app, then fully quit and restart it; setting a variable in an unrelated terminal does not update an already-running app. Node and the server must be installed in the environment that actually executes the plugin.
+A desktop app must inherit Node's `PATH` and, for Codex overrides, `WAE_WOW_API_MCP`. Fully quit and restart it after environment changes; setting a variable in an unrelated terminal does not update an already-running app.
 
 ## Windows
 
@@ -76,7 +78,7 @@ claude plugin marketplace add . --scope local
 claude plugin install wow-addon-engineer@wow-addon-engineer-marketplace --scope local
 ```
 
-The Claude command syntax was checked against 2.1.215. `--scope local` keeps installation settings local to the current project. For a session preview without registering a marketplace, run `claude --plugin-dir "C:\Path\wow-addon-engineer"` from a different workspace, or `claude --plugin-dir "/path/to/wow-addon-engineer"` on POSIX. Do not start this preview from the plugin repository root. Current Claude documentation requires 2.1.281 or later for MCP-entry validation in `claude plugin validate`; validation on an older client does not establish that the MCP configuration loads or connects.
+The Claude command syntax was checked against 2.1.215. `--scope local` keeps installation settings local to the current project. Because these examples add a **local-path** marketplace, run `npm ci --ignore-scripts` once in the checkout before checking its MCP; a GitHub marketplace install is copied and receives the host-managed dependency. For a session preview without registering a marketplace, run `claude --plugin-dir "C:\Path\wow-addon-engineer"` from a different workspace, or `claude --plugin-dir "/path/to/wow-addon-engineer"` on POSIX. Do not start this preview from the plugin repository root. Current Claude documentation requires 2.1.281 or later for MCP-entry validation in `claude plugin validate`; validation on an older client does not establish that the MCP configuration loads or connects.
 
 After an update, refresh the installed copy from the selected marketplace and restart the host with the intended environment. Open a fresh session, inspect the host's MCP status and actual tools, and test a small permitted query. Also test a clean install from each host-specific ZIP: a successful manifest check alone is not a protocol handshake or evidence of API data coverage. The commands above are installation instructions, not a claim that these checks have run.
 

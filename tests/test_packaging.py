@@ -29,33 +29,41 @@ class PackagingTests(unittest.TestCase):
             self.assertTrue(all(codex[name] == claude[name] for name in common))
             self.assertFalse(any(".git/" in name or ".env" in name or "__pycache__" in name for files in archives.values() for name in files))
 
-    def test_mcp_configurations_resolve_to_the_archived_original_launcher(self):
+    def test_mcp_connections_and_host_dependencies(self):
         with tempfile.TemporaryDirectory() as temp:
-            for host in ("codex", "claude"):
-                with zipfile.ZipFile(build_package(ROOT, host, temp)) as archive:
-                    prefix = "wow-addon-engineer/"
-                    if host == "codex":
-                        config = json.loads(archive.read(prefix + "mcp.json"))
-                        compat = json.loads(archive.read(prefix + ".mcp.json"))
-                        self.assertEqual(compat["mcpServers"]["wow_api"].pop("env_vars"), ["WAE_WOW_API_MCP"])
-                        self.assertEqual(config["mcpServers"], compat["mcpServers"])
-                        manifest = json.loads(archive.read(prefix + ".codex-plugin/plugin.json"))
-                        self.assertEqual(manifest["mcpServers"], "./.mcp.json")
-                        variable = "${PLUGIN_ROOT}/"
-                    else:
-                        config = json.loads(archive.read(prefix + ".claude-plugin/plugin.json"))
-                        variable = "${CLAUDE_PLUGIN_ROOT}/"
-                        self.assertNotIn(prefix + ".mcp.json", archive.namelist())
-                        self.assertNotIn(prefix + "mcp.json", archive.namelist())
-                    server = config["mcpServers"]["wow_api"]
-                    self.assertEqual(server["type"], "stdio")
-                    self.assertEqual(server["command"], "node")
-                    self.assertEqual(len(server["args"]), 1)
-                    self.assertTrue(server["args"][0].startswith(variable))
-                    launcher = prefix + server["args"][0].removeprefix(variable)
-                    self.assertIn(launcher, archive.namelist())
-                    self.assertEqual(archive.read(launcher), (ROOT / "scripts/mcp_launcher.mjs").read_bytes())
-                    self.assertFalse(any("node_modules/" in name for name in archive.namelist()))
+            prefix = "wow-addon-engineer/"
+            with zipfile.ZipFile(build_package(ROOT, "codex", temp)) as archive:
+                config = json.loads(archive.read(prefix + "mcp.json"))
+                compat = json.loads(archive.read(prefix + ".mcp.json"))
+                self.assertEqual(compat["mcpServers"]["wow_api"].pop("env_vars"), ["WAE_WOW_API_MCP"])
+                self.assertEqual(config["mcpServers"], compat["mcpServers"])
+                manifest = json.loads(archive.read(prefix + ".codex-plugin/plugin.json"))
+                self.assertEqual(manifest["mcpServers"], "./.mcp.json")
+                server = config["mcpServers"]["wow_api"]
+                self.assertEqual(server, {
+                    "type": "stdio", "command": "node",
+                    "args": ["${PLUGIN_ROOT}/scripts/mcp_launcher.mjs"],
+                })
+                self.assertEqual(archive.read(prefix + "scripts/mcp_launcher.mjs"),
+                                 (ROOT / "scripts/mcp_launcher.mjs").read_bytes())
+                self.assertNotIn(prefix + "package.json", archive.namelist())
+                self.assertNotIn(prefix + "package-lock.json", archive.namelist())
+                self.assertFalse(any("node_modules/" in name for name in archive.namelist()))
+
+            with zipfile.ZipFile(build_package(ROOT, "claude", temp)) as archive:
+                manifest = json.loads(archive.read(prefix + ".claude-plugin/plugin.json"))
+                self.assertEqual(manifest["mcpServers"]["wow_api"], {
+                    "type": "stdio", "command": "node",
+                    "args": ["${CLAUDE_PLUGIN_ROOT}/node_modules/@nighthawk42/wow-api-mcp/dist/index.js"],
+                })
+                npm = json.loads(archive.read(prefix + "package.json"))
+                lock = json.loads(archive.read(prefix + "package-lock.json"))
+                self.assertEqual(npm["dependencies"], {"@nighthawk42/wow-api-mcp": "0.2.2"})
+                self.assertEqual(lock["packages"][""]["dependencies"], npm["dependencies"])
+                self.assertEqual(lock["packages"]["node_modules/@nighthawk42/wow-api-mcp"]["version"], "0.2.2")
+                self.assertNotIn(prefix + ".mcp.json", archive.namelist())
+                self.assertNotIn(prefix + "mcp.json", archive.namelist())
+                self.assertFalse(any("node_modules/" in name for name in archive.namelist()))
 
     def test_packages_are_reproducible_and_existing_output_is_preserved(self):
         with tempfile.TemporaryDirectory() as one, tempfile.TemporaryDirectory() as two:

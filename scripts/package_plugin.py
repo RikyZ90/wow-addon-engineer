@@ -23,7 +23,7 @@ SCRIPTS = ("doctor.py", "tooling.py", "run_tool.py", "mcp_launcher.mjs", "check_
            "python.ps1", "doctor.ps1", "check-addon.ps1")
 HOST_FILES = {
     "codex": ("plugin.json", "mcp.json", ".mcp.json", ".codex-plugin/plugin.json", ".agents/plugins/marketplace.json"),
-    "claude": (".claude-plugin/plugin.json", ".claude-plugin/marketplace.json"),
+    "claude": (".claude-plugin/plugin.json", ".claude-plugin/marketplace.json", "package.json", "package-lock.json"),
 }
 
 

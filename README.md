@@ -7,13 +7,19 @@
 A plugin for **OpenAI Codex** and **Claude Code** that helps agents create, research, debug, review, test, and prepare releases of World of Warcraft addons in Lua.
 
 **One repository. Seven shared skills. Packaged MCP connection. Separate host manifests and installable ZIPs.**
-Original source and documentation use MIT. External tools remain user-installed: **invoke, do not vendor**.
+Original source and documentation use MIT. External code and data are never bundled: **invoke, do not vendor**. Claude Code installs the pinned optional API server from npm into its own plugin cache; Codex uses a separately installed copy.
 
 ## Quick start
 
 This is an **AI coding plugin**, not an in-game addon. Install it in Codex or Claude Code; do not copy this repository into WoW's `Interface/AddOns` folder.
 
-Use a current plugin-capable host. The local helpers require **Python 3.10+**. The optional API research connection also needs **Node.js 20.11+** and a separately installed `@nighthawk42/wow-api-mcp` server. The plugin starts an existing server; it never downloads or installs one.
+Use a current plugin-capable host. The local helpers require **Python 3.10+**. Optional API research requires **Node.js 20.11+**. Claude Code installs pinned `@nighthawk42/wow-api-mcp@0.2.2` from npm when it caches the marketplace plugin, provided its version supports [plugin npm dependencies](https://code.claude.com/docs/en/plugins/loading#nodejs-package-dependencies). Codex users install the same upstream package once, then restart Codex:
+
+```sh
+npm install --global @nighthawk42/wow-api-mcp@0.2.2
+```
+
+The package comes directly from its [upstream publisher](https://github.com/Nighthawk42/wow_api_mcp). Neither host ZIP includes its code or data. The seven skills also work without the MCP.
 
 **Codex** — run in your addon workspace:
 
@@ -89,7 +95,7 @@ The checker reads TOCs and referenced XML/Lua paths, follows XML includes, verif
 | BigWigs Packager | external `release.sh` through Bash | Addon release packaging |
 
 `doctor` only detects paths. It does not launch servers, query versions, contact WoW, or install anything.
-The plugin declares a local `wow_api` MCP connection for both hosts. Its original Node launcher starts an existing server selected by `WAE_WOW_API_MCP`, or detects the installed Nighthawk npm package associated with `wow-api-mcp` on PATH. It never downloads or installs a server. An invalid explicit override fails without falling back. Set environment overrides before restarting the host app; use a new session after upgrading the plugin. A missing server produces an unavailable MCP connection while the skills remain usable.
+The plugin declares a local `wow_api` MCP connection for both hosts. Claude Code starts its host-managed npm dependency directly; Codex's original Node launcher starts an existing server selected by `WAE_WOW_API_MCP` or detected on PATH. The launcher and doctor never install software. An invalid Codex override fails without falling back. Restart the host and inspect its actual MCP status after installation or upgrade; the seven skills remain usable if the MCP is unavailable.
 
 [Integration setup](docs/integrations.md) documents Windows and macOS/Linux setup, verified upstream identities, and invocation limits. GPL tools are external processes; their code and binaries are absent from this repository and its packages. Lychee also remains user-installed.
 

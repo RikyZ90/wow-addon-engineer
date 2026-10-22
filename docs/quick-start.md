@@ -8,9 +8,9 @@ WoW Addon Engineer is a plugin for **OpenAI Codex** and **Claude Code**. It give
 
 - A current Codex or Claude Code version with plugin support.
 - **Python 3.10+** for the local diagnostic and addon-checking helpers. They use only the standard library.
-- Optional API research: an existing native **Node.js 20.11+** on the host's `PATH`, plus a separately installed **`@nighthawk42/wow-api-mcp`** server from [Nighthawk42/wow_api_mcp](https://github.com/Nighthawk42/wow_api_mcp). Follow that project's setup instructions before enabling the connection.
+- Optional API research: native **Node.js 20.11+** on the host's `PATH`. Claude Code installs the pinned **`@nighthawk42/wow-api-mcp@0.2.2`** dependency from npm into its plugin cache when installed from the marketplace on a version supporting [plugin npm dependencies](https://code.claude.com/docs/en/plugins/loading#nodejs-package-dependencies). Codex needs a separately installed server from [Nighthawk42/wow_api_mcp](https://github.com/Nighthawk42/wow_api_mcp).
 
-The plugin does not install Python, Node, or external tools. Its MCP launcher starts an already-installed server without `npx` or package downloads. Missing MCP prerequisites leave that connection unavailable; the seven skills and Python helpers remain usable.
+The plugin does not install Python or Node. Claude Code handles its one pinned MCP dependency; the Codex launcher only starts an already-installed server. Missing MCP prerequisites leave that connection unavailable; the seven skills and Python helpers remain usable.
 
 ## 2. Install from GitHub
 
@@ -82,18 +82,16 @@ Replace the addon path and TOC filename with your own. `doctor` detects local pa
 
 ## Optional: connect API research
 
-If you choose to install the optional server yourself, the version used in this project's MCP verification can be installed separately with npm:
+**Claude Code marketplace install:** with Node available, Claude Code downloads the exact npm dependency selected by this plugin's `package-lock.json` into its own plugin cache. You do not need a global MCP installation. A local checkout loaded with `--plugin-dir` or installed from a **local-path marketplace** runs in place and is not copied into that cache; run `npm ci --ignore-scripts` in that checkout if you want to preview its MCP. This creates an ignored `node_modules/` directory, never a distributable file.
+
+**Codex:** install the optional server yourself once, then restart Codex:
 
 ```sh
 npm install --global @nighthawk42/wow-api-mcp@0.2.2
 ```
 
-This is a manual upstream installation, not part of the plugin installer. Review the [server's license and data terms](https://github.com/Nighthawk42/wow_api_mcp) first. No server code or dependencies are included in this repository or its ZIPs.
+Review the [server's license and data terms](https://github.com/Nighthawk42/wow_api_mcp). The Codex launcher detects the installed package behind `wow-api-mcp` on `PATH`. For a custom Codex server location, set **`WAE_WOW_API_MCP`** to its existing direct `.js` or `.mjs` entrypoint before launching the host. See the [Windows and macOS/Linux examples](integrations.md#wow-api-mcp-packaged-connection).
 
-With Node and the Nighthawk server already installed, the host can start the packaged `wow_api` connection when the plugin is enabled. The launcher detects the installed package behind `wow-api-mcp` on `PATH`.
-
-For a custom server location, set **`WAE_WOW_API_MCP`** to its existing direct `.js` or `.mjs` entrypoint before launching the host. It accepts one path, without flags. See the [Windows and macOS/Linux examples](integrations.md#wow-api-mcp-packaged-connection). An invalid explicit override fails instead of selecting another installation.
-
-Fully quit and restart a desktop host after changing its environment, then open a fresh session and inspect its MCP status and actual tools. If you already configured the same server separately, disable one connection manually to avoid duplicates. Server operations may access the network and maintain upstream caches; the launcher itself performs no installation.
+Fully quit and restart the host after installing or changing its environment, then inspect actual MCP status and tools in a fresh session. If the same server is configured separately, disable one connection manually. Server operations may access the network and maintain upstream caches. No server code or dependencies are included in this repository or its ZIPs.
 
 See [integration setup](integrations.md) for the other optional tools and [usage examples](../examples/usage.md) for common addon tasks.

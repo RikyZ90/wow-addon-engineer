@@ -1,6 +1,6 @@
 # External integrations
 
-Connection guidance checked **2026-10-22**; other upstream observations below retain their stated version limits. Recheck the installed version's documentation and license for the actual task. Detection and plugin startup do not install external tools. Tool calls may perform network/cache operations; inspect the chosen operation and the user's authorization. See [notices](../THIRD_PARTY_NOTICES.md).
+Connection guidance checked **2026-10-22**; other upstream observations below retain their stated version limits. Recheck the installed version's documentation and license for the actual task. Claude Code installs the one pinned MCP npm dependency when caching the marketplace plugin; the project scripts and doctor do not install tools. Tool calls may perform network/cache operations; inspect the chosen operation and the user's authorization. See [notices](../THIRD_PARTY_NOTICES.md).
 
 ## Detection and explicit invocation
 
@@ -23,13 +23,13 @@ JS/MJS entrypoints use existing Node; PY uses the current Python; SH uses existi
 
 ## wow-api-mcp: packaged connection
 
-Version 0.2.0 packages a `wow_api` MCP connection to the original Node launcher, not the external server. It requires an existing native Node.js >=20.11 on the host's `PATH` and an already-installed [Nighthawk42/wow_api_mcp](https://github.com/Nighthawk42/wow_api_mcp), package `@nighthawk42/wow-api-mcp`. The normal built entrypoint is `dist/index.js`. No upstream source, dependency, binary, API data, or cache is vendored.
+Version 0.2.2 packages a `wow_api` MCP connection for both hosts. It requires native Node.js >=20.11 on the executing host's `PATH`. Claude Code installs pinned [Nighthawk42/wow_api_mcp](https://github.com/Nighthawk42/wow_api_mcp) package `@nighthawk42/wow-api-mcp@0.2.2` from npm into its plugin cache, then starts `dist/index.js` directly. Codex uses the original Node launcher and a separately installed copy. No upstream source, dependency, binary, API data, or cache is vendored in this repository or either ZIP.
 
-The launcher first uses `WAE_WOW_API_MCP` when set. It must name one existing direct `.js` or `.mjs` server entrypoint, without flags or shell syntax, belonging to the expected package. An invalid override fails explicitly and does not fall back to another installation. Without an override, it inspects `wow-api-mcp` candidates on `PATH` and known installed npm global/local layouts, checking package identity before selecting the real entrypoint. It never invokes npm or the shim. The Python doctor follows the same installed-package resolution without executing the server.
+The Codex launcher first uses `WAE_WOW_API_MCP` when set. It must name one existing direct `.js` or `.mjs` server entrypoint, without flags or shell syntax, belonging to the expected package. An invalid override fails explicitly and does not fall back to another installation. Without an override, it inspects `wow-api-mcp` candidates on `PATH` and known installed npm global/local layouts, checking package identity before selecting the real entrypoint. It never invokes npm or the shim. The Python doctor follows the same installed-package resolution without executing the server.
 
 The unscoped [spartanui-wow/wow-api-mcp](https://github.com/spartanui-wow/wow-api-mcp) exposes the same executable name but is a different provider. It is not the packaged connection's target; a name match alone does not establish identity or compatible tools.
 
-For an already-installed built checkout, set the override before launching the host. Replace these example paths with the real entrypoint:
+For a separately installed Codex server, set the override before launching the host. Replace these example paths with the real entrypoint:
 
 Windows PowerShell:
 
@@ -47,7 +47,7 @@ python3 scripts/doctor.py --json
 
 These examples set the variable for the current shell and its child processes only. Fully quit and restart a desktop host so it inherits the intended environment; a GUI app opened elsewhere may not inherit this shell. Do not place secrets in manifests. Missing prerequisites leave the MCP unavailable while the skills remain usable.
 
-Codex uses root `mcp.json` with the Agent Plugins schema, `type: "stdio"`, `command: "node"`, and `args: ["${PLUGIN_ROOT}/scripts/mcp_launcher.mjs"]`. Compatibility `.mcp.json` carries the same connection without the schema and explicitly forwards `WAE_WOW_API_MCP` through `env_vars`. Codex applies that environment allowlist to the portable server; declaring `env_vars` in portable `mcp.json` itself would violate its schema. Claude declares the same `wow_api` inline with `${CLAUDE_PLUGIN_ROOT}` and its ZIP excludes the root MCP files. No `cwd` placeholder or host-specific global configuration is needed. See [installation and upgrade guidance](installation.md).
+Codex uses root `mcp.json` with the Agent Plugins schema, `type: "stdio"`, `command: "node"`, and `args: ["${PLUGIN_ROOT}/scripts/mcp_launcher.mjs"]`. Compatibility `.mcp.json` carries the same connection without the schema and explicitly forwards `WAE_WOW_API_MCP` through `env_vars`. Claude declares `wow_api` inline with `args: ["${CLAUDE_PLUGIN_ROOT}/node_modules/@nighthawk42/wow-api-mcp/dist/index.js"]`; its ZIP has the pinned npm manifest and lockfile but excludes the root MCP files. Its cached dependency is managed by Claude Code, so a missing `wow-api-mcp` on the global PATH does not indicate a Claude connection failure. See [installation and upgrade guidance](installation.md).
 
 An existing manually configured MCP may duplicate the packaged connection. Inspect the host's server list and disable one manually; neither the launcher nor doctor edits configuration. After a fresh session connects, inspect its actual tool list, including the documented `list_flavors` operation when present. Record upstream version/revision and the returned data track/build for each research task. A connection does not promise support for any particular WoW flavor or build.
 

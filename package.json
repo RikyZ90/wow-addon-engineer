@@ -1,0 +1,8 @@
+{
+  "name": "wow-addon-engineer",
+  "version": "0.2.2",
+  "private": true,
+  "dependencies": {
+    "@nighthawk42/wow-api-mcp": "0.2.2"
+  }
+}

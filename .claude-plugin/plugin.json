@@ -1,7 +1,7 @@
 {
   "name": "wow-addon-engineer",
-  "version": "0.2.1",
-  "description": "Evidence-based World of Warcraft addon development in Lua, with optional user-installed tooling.",
+  "version": "0.2.2",
+  "description": "Evidence-based World of Warcraft addon development in Lua, with optional host-managed API research.",
   "author": {
     "name": "WoW Addon Engineer contributors"
   },
@@ -12,7 +12,7 @@
     "wow_api": {
       "type": "stdio",
       "command": "node",
-      "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/mcp_launcher.mjs"]
+      "args": ["${CLAUDE_PLUGIN_ROOT}/node_modules/@nighthawk42/wow-api-mcp/dist/index.js"]
     }
   },
   "keywords": [

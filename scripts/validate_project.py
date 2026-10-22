@@ -64,9 +64,27 @@ def validate(root):
     if portable_mcp.get("mcpServers") != expected or compat_mcp.get("mcpServers") != compat_expected:
         errors.append("Codex MCP configurations must launch the packaged local adapter")
     claude_expected = {"wow_api": {"type": "stdio", "command": "node",
-                                  "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/mcp_launcher.mjs"]}}
+                                  "args": ["${CLAUDE_PLUGIN_ROOT}/node_modules/@nighthawk42/wow-api-mcp/dist/index.js"]}}
     if claude.get("mcpServers") != claude_expected:
         errors.append("Claude MCP configuration must use its own plugin-root placeholder")
+    npm = load("package.json")
+    lock = load("package-lock.json")
+    dependency = {"@nighthawk42/wow-api-mcp": "0.2.2"}
+    if (npm.get("name") != portable.get("name") or npm.get("version") != portable.get("version")
+            or npm.get("private") is not True or npm.get("dependencies") != dependency
+            or npm.get("scripts") or npm.get("devDependencies")):
+        errors.append("Claude npm manifest must pin only the approved MCP dependency")
+    packages = lock.get("packages", {})
+    root_package = packages.get("", {})
+    server_package = packages.get("node_modules/@nighthawk42/wow-api-mcp", {})
+    if (lock.get("lockfileVersion") != 3 or lock.get("name") != npm.get("name")
+            or lock.get("version") != npm.get("version")
+            or root_package.get("dependencies") != dependency
+            or server_package.get("version") != "0.2.2"
+            or server_package.get("bin", {}).get("wow-api-mcp") != "dist/index.js"
+            or not server_package.get("integrity", "").startswith("sha512-")
+            or not server_package.get("resolved", "").startswith("https://registry.npmjs.org/")):
+        errors.append("Claude npm lockfile must pin the approved MCP package and entrypoint")
     if not (root / "scripts/mcp_launcher.mjs").is_file():
         errors.append("Original MCP launcher missing")
     actual = {path.parent.name for path in (root / "skills").glob("*/SKILL.md")}

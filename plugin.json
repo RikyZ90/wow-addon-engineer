@@ -1,8 +1,8 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "wow-addon-engineer",
-  "version": "0.2.1",
-  "description": "Evidence-based World of Warcraft addon development in Lua, with optional user-installed tooling.",
+  "version": "0.2.2",
+  "description": "Evidence-based World of Warcraft addon development in Lua, with optional external tooling.",
   "author": {
     "name": "WoW Addon Engineer contributors"
   },

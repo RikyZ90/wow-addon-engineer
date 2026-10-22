@@ -2,6 +2,14 @@
 
 Latest update: **2026-10-22**. Earlier checks below retain their 2026-10-21 scope. This record distinguishes local checks, actual host checks, and the historical manual sample check. The repository's Actions page reports subsequent GitHub CI runs; no OpenAI directory approval is claimed.
 
+## 0.2.2 Claude Code managed MCP dependency (2026-10-22)
+
+- Windows / Python 3.12.14: 46 regression tests passed with a writable temporary test directory; offline project validation passed.
+- Windows / Node 24.20.0: 8 launcher checks passed, 3 POSIX-only checks skipped. Claude manifest validation passed with Claude Code 2.1.215.
+- A fresh `npm ci --ignore-scripts` from the project lockfile in an isolated temporary directory installed 103 packages. The direct MCP entrypoint completed protocol initialization and listed 14 tools.
+- An isolated Claude Code 2.1.215 local-path marketplace install of the Claude 0.2.2 ZIP succeeded and its cached plugin contained the npm dependency. Local-path marketplaces load the source directory in place, so the MCP initially failed there; after the documented manual `npm ci --ignore-scripts` in that source directory, `claude mcp list` reported `wow_api` connected. This matches the official in-place versus copied-plugin distinction.
+- Both 0.2.2 ZIPs were built from the allowlist. The Claude ZIP includes `package.json` and `package-lock.json`, while the Codex ZIP excludes them; neither contains `node_modules/`. No GitHub marketplace update, public directory submission, real model inference, or new game-client test was performed.
+
 ## 0.2.1 English publication preparation (2026-10-22)
 
 - Windows / Python 3.12.14: **46 tests passed**, including the translated smoke messages with real Lua 5.4.6.

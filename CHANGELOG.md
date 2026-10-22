@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.2 - 2026-10-22
+
+- Add a Claude Code-only npm manifest and lockfile pinned to @nighthawk42/wow-api-mcp 0.2.2, allowing supported marketplace installs to fetch the MCP server into Claude's plugin cache.
+- Run the Claude MCP directly from the host-managed dependency; keep Codex's installed-server launcher and one-time manual npm setup.
+- Verify the Claude ZIP contains dependency metadata but no upstream code or node_modules; update installation, integration, and licensing guidance.
+
 ## 0.2.1 - 2026-10-22
 
 - Add an English quick-start guide with direct GitHub marketplace installation for Codex and Claude Code.

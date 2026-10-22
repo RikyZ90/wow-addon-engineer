@@ -44,4 +44,4 @@ For performance, follow actual hot paths: event frequency, OnUpdate cadence, all
 
 Never read or overwrite game SavedVariables, deploy into a live installation, send hotkeys, attach a runtime probe, upload, publish, tag, commit, or push merely because a skill suggests a workflow. Respect existing user authorization and obtain missing authorization at the concrete mutation. Local reversible addon edits and checks remain within the requested development task.
 
-External tools are optional and user-installed. Read [integrations](integrations.md) before invoking one and [licensing](licensing.md) before redistributing anything.
+External tools are optional. Claude Code can install the pinned API MCP dependency into its plugin cache; other integrations remain user-installed. Read [integrations](integrations.md) before invoking one and [licensing](licensing.md) before redistributing anything.

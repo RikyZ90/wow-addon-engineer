@@ -1,6 +1,6 @@
 # Third-party notices
 
-Optional user-installed tools only: **none of their source, binaries, databases, bundled skills/addons, or dependencies are redistributed**. These notices record boundaries, not replacement license grants.
+**No third-party source, binaries, databases, bundled skills/addons, or dependencies are redistributed in this repository or its ZIPs.** Claude Code downloads the pinned optional MCP dependency from npm into its own plugin cache; other integrations remain user-installed. These notices record boundaries, not replacement license grants.
 
 Evidence reviewed **2026-10-21**. Immutable links preserve inspected snapshots; recheck installed versions.
 
@@ -16,8 +16,8 @@ Evidence reviewed **2026-10-21**. Immutable links preserve inspected snapshots; 
 | Blizzard APIs, FrameXML/game data/assets | Respective owner terms; access through user-provided client data or authorized research | No Blizzard source/game data bundled; build evidence is not a redistribution grant |
 | Project logo | User-supplied previously generated artwork; [provenance](assets/README.md) | Included unchanged; excluded from original-code MIT; public-use rights not independently verified |
 
-The plugin packages an original MCP launcher and connection configuration, not a server. Automatic npm-shim discovery is restricted to the identified @nighthawk42/wow-api-mcp package; an explicit direct JavaScript entrypoint can select a separately installed provider. Node and all upstream code, data and dependencies remain user-installed. This wiring was reviewed on 2026-10-22.
+Codex packages an original MCP launcher and connection configuration, not a server. Its npm-shim discovery is restricted to the identified @nighthawk42/wow-api-mcp package; an explicit direct JavaScript entrypoint can select a separately installed provider. Claude Code packages an npm manifest and lockfile pinned to @nighthawk42/wow-api-mcp 0.2.2; the host downloads it at install/update into its plugin cache. Node remains user-provided. Upstream code, data and dependencies stay outside Git and both ZIPs. This wiring was reviewed on 2026-10-22.
 
 The two MCP providers share a command name and must not be conflated. Tool data selectors/packaging features do not certify client compatibility.
 
-Python, Node, Bash, host clients and independently installed integrations remain separate user-provided software. No interpreter/dependency is vendored. [Project licensing](docs/licensing.md).
+Python, Node, Bash, host clients and other integrations remain separate user-provided software. No interpreter/dependency is vendored. [Project licensing](docs/licensing.md).
