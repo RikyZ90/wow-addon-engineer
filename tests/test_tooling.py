@@ -103,13 +103,13 @@ class ToolingTests(unittest.TestCase):
                     automatic = tooling.find_tool("wow-api-mcp")
                 run.assert_not_called()
                 if identity == "@nighthawk42/wow-api-mcp":
-                    self.assertEqual(automatic["command"], [node, str(entry)])
+                    self.assertEqual(automatic["command"], [node, str(entry.resolve())])
                 else:
                     self.assertEqual(automatic["status"], "needs-direct-entrypoint")
                     self.assertEqual(automatic["command"], [])
                 with patch.dict(os.environ, {"WAE_WOW_API_MCP": str(entry)}, clear=True), patch.object(tooling.shutil, "which", side_effect=which):
                     explicit = tooling.find_tool("wow-api-mcp")
-                self.assertEqual(explicit["command"], [node, str(entry)])
+                self.assertEqual(explicit["command"], [node, str(entry.resolve())])
 
     def test_mcp_override_rejects_non_javascript_files(self):
         with tempfile.TemporaryDirectory() as temp:
@@ -207,7 +207,7 @@ class ToolingTests(unittest.TestCase):
             with patch.dict(os.environ, {"WAE_BIGWIGS_PACKAGER": str(script)}, clear=True), patch.object(tooling.sys, "platform", "win32"), patch.object(tooling.shutil, "which", side_effect=which):
                 result = tooling.find_tool("bigwigs-packager")
             self.assertEqual(result["status"], "available")
-            self.assertEqual(result["command"], [str(bash), str(script)])
+            self.assertEqual(result["command"], [str(bash), str(script.resolve())])
 
     def test_explicit_bash_override_does_not_fall_back(self):
         with tempfile.TemporaryDirectory() as temp:
