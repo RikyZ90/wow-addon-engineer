@@ -1,0 +1,24 @@
+{
+  "name": "wow-addon-engineer",
+  "version": "0.2.1",
+  "description": "Evidence-based World of Warcraft addon development in Lua, with optional user-installed tooling.",
+  "author": {
+    "name": "WoW Addon Engineer contributors"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/RikyZ90/wow-addon-engineer#readme",
+  "repository": "https://github.com/RikyZ90/wow-addon-engineer",
+  "mcpServers": {
+    "wow_api": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/mcp_launcher.mjs"]
+    }
+  },
+  "keywords": [
+    "world-of-warcraft",
+    "lua",
+    "addons",
+    "development"
+  ]
+}

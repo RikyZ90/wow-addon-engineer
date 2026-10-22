@@ -1,0 +1,8 @@
+## Interface: 16001
+## Title: WoW Addon Engineer Smoke
+## Notes: Manual smoke sample; API source 1.60.1.70450, earlier sample user-tested on 1.60.1.70532.
+## Version: 0.1.1
+## SavedVariables: WoWAddonEngineerSmokeDB
+
+Core.lua
+Smoke.xml

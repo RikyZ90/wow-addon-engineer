@@ -1,0 +1,14 @@
+{
+  "name": "wow-addon-engineer-marketplace",
+  "owner": {
+    "name": "WoW Addon Engineer contributors"
+  },
+  "plugins": [
+    {
+      "name": "wow-addon-engineer",
+      "source": "./",
+      "description": "Evidence-based World of Warcraft addon engineering skills."
+    }
+  ],
+  "description": "Shared World of Warcraft addon engineering skills for Codex and Claude Code."
+}

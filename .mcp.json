@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "wow_api": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["${PLUGIN_ROOT}/scripts/mcp_launcher.mjs"],
+      "env_vars": ["WAE_WOW_API_MCP"]
+    }
+  }
+}

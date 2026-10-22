@@ -1,0 +1,31 @@
+{
+  "name": "wow-addon-engineer",
+  "version": "0.2.1",
+  "description": "Evidence-based World of Warcraft addon development in Lua, with optional user-installed tooling.",
+  "author": {
+    "name": "WoW Addon Engineer contributors"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/RikyZ90/wow-addon-engineer#readme",
+  "repository": "https://github.com/RikyZ90/wow-addon-engineer",
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "requires_local_executor": true,
+  "interface": {
+    "displayName": "WoW Addon Engineer",
+    "shortDescription": "Build and debug WoW addons",
+    "longDescription": "Shared addon engineering skills with build-specific API research, structural checks, and optional external tools. Invoke, do not vendor.",
+    "developerName": "WoW Addon Engineer contributors",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "brandColor": "#05BFF4",
+    "logo": "./assets/logo.png",
+    "composerIcon": "./assets/logo.png",
+    "defaultPrompt": [
+      "Use WoW Addon Engineer to inspect this addon and identify its target build."
+    ]
+  }
+}
